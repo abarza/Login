@@ -1,4 +1,10 @@
 <resources>
-  <string name="app_name">BeeLogin</string>
+  <string name="app_name" translatable="false">BeeLogin</string>
   <string name="beetrack">Beetrack</string>
+  <string name="action_login_short">Log In</string>
+  <string name="log_in">Log in</string>
+  <string name="user">Username</string>
+  <string name="password">Password</string>
+  <string name="next">Next</string>
+  <string name="required_field">Required field</string>
 </resources>
