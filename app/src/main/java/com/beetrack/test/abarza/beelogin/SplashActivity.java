@@ -10,6 +10,8 @@ import android.widget.ProgressBar;
 import com.beetrack.test.abarza.beelogin.home.HomeActivity;
 import com.beetrack.test.abarza.beelogin.login.LoginActivity;
 
+import timber.log.Timber;
+
 public class SplashActivity extends AppCompatActivity {
 
   private static final String TAG = SplashActivity.class.getSimpleName();
@@ -48,9 +50,11 @@ public class SplashActivity extends AppCompatActivity {
           if (USER_LOGGED_IN) {
             // Send the user to the HomeActivity
             goToActivity(HomeActivity.class);
+            Timber.tag(TAG).d("User isn't logged in");
           } else {
             // Send user to LoginActivity
             goToActivity(LoginActivity.class);
+            Timber.tag(TAG).d("User was logged in");
           }
         }
       }
