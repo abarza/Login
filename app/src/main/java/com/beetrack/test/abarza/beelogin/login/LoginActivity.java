@@ -46,6 +46,8 @@ public class LoginActivity extends AppCompatActivity {
   }
 
   public void validate() {
+
+    // Check if fields are empty
     String userNameError = null;
     if (TextUtils.isEmpty(mEditTextUserName.getText())) {
       userNameError = getString(R.string.required_field);
@@ -58,6 +60,11 @@ public class LoginActivity extends AppCompatActivity {
     }
     toggleTextInputLayoutError(mTextInputPassword, passError);
 
+
+    //TODO: check if fields are valid
+
+
+    // hide keyboard
     clearFocus();
   }
 

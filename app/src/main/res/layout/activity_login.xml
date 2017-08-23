@@ -5,9 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="false"
     android:animateLayoutChanges="true"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorPrimary"
+    android:focusableInTouchMode="false">
 
   <LinearLayout
       android:layout_width="match_parent"
@@ -25,16 +25,15 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/app_name"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_logobeetrack"/>
-
+        app:srcCompat="@drawable/ic_beetrack_logo"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/userNameTextInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:hint="@string/user"
         android:textColorHint="@color/white"
-        android:layout_marginBottom="3dp"
         app:errorTextAppearance="@style/LoginTheme.EditTextError"
         app:hintTextAppearance="@style/LoginTheme.FloatingLabel">
 
@@ -65,7 +64,7 @@
         android:textColorHint="@color/white"
         app:errorTextAppearance="@style/LoginTheme.EditTextError"
         app:hintTextAppearance="@style/LoginTheme.FloatingLabel"
-        app:passwordToggleEnabled="true">
+        app:passwordToggleEnabled="false">
 
       <EditText
           android:id="@+id/passwordEditText"
@@ -86,12 +85,11 @@
 
     <Button
         android:id="@+id/login_button"
-        style="@style/BeetrackButtonSquare"
-        android:layout_width="match_parent"
+        style="@style/BeetrackButtonRounded"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:paddingLeft="40dp"
-        android:paddingRight="40dp"
+        android:layout_marginTop="35dp"
+        android:background="@drawable/rounded_button_bg"
         android:text="@string/log_in"/>
 
 
