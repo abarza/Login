@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="beetrack">Beetrack</string>
+  <string name="action_login_short">Ingresar</string>
+  <string name="log_in">Ingresar</string>
+  <string name="user">Usuario</string>
+  <string name="password">Contraseña</string>
+  <string name="next">Sig.</string>
+  <string name="required_field">Campo requerido</string>
 </resources>

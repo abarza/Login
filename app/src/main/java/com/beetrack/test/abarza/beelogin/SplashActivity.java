@@ -15,7 +15,7 @@ import timber.log.Timber;
 public class SplashActivity extends AppCompatActivity {
 
   private static final String TAG = SplashActivity.class.getSimpleName();
-  private static final int SLEEP_TIME = 3000;
+  private static final int SLEEP_TIME = 1000;
   // Just for testing purposes
   private static final boolean USER_LOGGED_IN = false;
 

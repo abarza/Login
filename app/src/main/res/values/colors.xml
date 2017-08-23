@@ -6,5 +6,16 @@
   <color name="primary_material_light">#f5b63e</color>
   <color name="primary_dark_material_light">#4b4b4b</color>
   <color name="accent_material_light">#ffa700</color>
+
   <color name="white">#FFFFFFFF</color>
+  <color name="black">#FF000000</color>
+
+  <color name="transparent">#00FFFFFF</color>
+
+  <color name="white_opaque">#eeeeee</color>
+  <color name="blue">#428bca</color>
+  <color name="green">#5cb85c</color>
+  <color name="yellow">#f0ad4e</color>
+  <color name="red">#d9534f</color>
+
 </resources>
