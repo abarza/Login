@@ -85,9 +85,11 @@
     </android.support.design.widget.TextInputLayout>
 
     <RelativeLayout
-        android:layout_width="100dp"
+        android:id="@+id/checkLogin"
+        android:layout_width="500px"
         android:layout_height="wrap_content"
         android:layout_marginTop="35dp"
+        android:background="@color/white"
         android:orientation="horizontal">
 
       <View
@@ -99,17 +101,15 @@
           tools:ignore="RtlHardcoded"/>
 
       <View
-          android:id="@+id/centerArea"
-          android:layout_width="0dp"
+          android:id="@+id/rightCircle"
+          android:layout_width="50dp"
           android:layout_height="50dp"
-          android:layout_alignParentTop="true"
-          android:layout_toLeftOf="@+id/rightCircle"
-          android:layout_toRightOf="@+id/leftCircle"
-          android:background="@color/white"
-          android:visibility="gone"
+          android:layout_alignParentRight="true"
+          android:background="@drawable/semicircle_right"
           tools:ignore="RtlHardcoded"/>
 
       <TextView
+          android:id="@+id/textLogin"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_centerHorizontal="true"
@@ -118,22 +118,15 @@
           android:textColor="@color/colorAccent"
           android:textSize="16sp"
           android:textStyle="bold"
-          android:visibility="gone"/>
-
-      <View
-          android:id="@+id/rightCircle"
-          android:layout_width="50dp"
-          android:layout_height="50dp"
-          android:layout_alignParentRight="true"
-          android:background="@drawable/semicircle_right"
-          tools:ignore="RtlHardcoded"/>
+          android:visibility="visible"/>
 
       <ProgressBar
           android:id="@+id/loadingLogin"
           android:layout_width="35dp"
           android:layout_height="35dp"
           android:layout_centerInParent="true"
-          android:indeterminate="true"/>
+          android:indeterminate="true"
+          android:visibility="gone"/>
 
     </RelativeLayout>
 
