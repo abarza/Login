@@ -1,8 +1,10 @@
 package com.beetrack.test.abarza.beelogin.login;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import com.beetrack.test.abarza.beelogin.R;
 
@@ -20,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
   private TextInputLayout mTextInputUserName;
   private TextInputLayout mTextInputPassword;
   private Button mLoginButton;
+  private ProgressBar mLoadingLogin;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     setContentView(R.layout.activity_login);
 
     bindUI();
+
 
     mLoginButton.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -43,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     mTextInputPassword = (TextInputLayout) findViewById(R.id.passwordTextInputLayout);
     mEditTextPassword = (EditText) findViewById(R.id.passwordEditText);
     mLoginButton = (Button) findViewById(R.id.login_button);
+    mLoadingLogin = (ProgressBar) findViewById(R.id.loadingLogin);
   }
 
   public void validate() {

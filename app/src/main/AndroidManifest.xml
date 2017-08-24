@@ -18,7 +18,6 @@
     </activity>
     <activity
         android:name=".login.LoginActivity"
-        android:theme="@style/LoginTheme"
         android:label="Login"
         >
     </activity>

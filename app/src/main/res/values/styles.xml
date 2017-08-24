@@ -11,7 +11,7 @@
   <style name="noToolbar" parent="Theme.AppCompat.Light.NoActionBar"/>
 
   <style name="LoginTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="colorPrimary">@color/white</item>
+    <item name="colorPrimary">@color/red</item>
     <item name="colorPrimaryDark">@color/black</item>
     <item name="colorAccent">@color/white</item>
   </style>
@@ -28,6 +28,10 @@
     <item name="android:textSize">14sp</item>
     <item name="android:gravity">right</item>
   </style>
+
+
+  <style name="AppTheme.ProgressBar" parent="AppTheme"/>
+
 
   <!-- Edit text -->
   <style name="LoginTheme.EditText" parent="LoginTheme">
