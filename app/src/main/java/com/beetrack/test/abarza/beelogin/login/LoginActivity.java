@@ -3,15 +3,18 @@ package com.beetrack.test.abarza.beelogin.login;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -21,14 +24,14 @@ import com.beetrack.test.abarza.beelogin.R;
 
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
   private static final String TAG = LoginActivity.class.getSimpleName();
+  private LoginContract.UserActionsListener mUserActionsListener;
   private EditText mEditTextUserName;
   private EditText mEditTextPassword;
   private TextInputLayout mTextInputUserName;
   private TextInputLayout mTextInputPassword;
-  private Button mLoginButton;
   private ProgressBar mLoadingLogin;
   private RelativeLayout mCheckLogin;
   private TextView mLoginText;
@@ -37,11 +40,9 @@ public class LoginActivity extends AppCompatActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
-
-    bindUI();
-
-
-    mLoginButton.setOnClickListener(new View.OnClickListener() {
+    mUserActionsListener = new LoginPresenter(this);
+    setupComponents();
+    mCheckLogin.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         login();
@@ -50,75 +51,77 @@ public class LoginActivity extends AppCompatActivity {
 
   }
 
-  private void bindUI() {
+  private void setupComponents() {
     mEditTextUserName = (EditText) findViewById(R.id.userNameEditText);
     mTextInputUserName = (TextInputLayout) findViewById(R.id.userNameTextInputLayout);
     mTextInputPassword = (TextInputLayout) findViewById(R.id.passwordTextInputLayout);
     mEditTextPassword = (EditText) findViewById(R.id.passwordEditText);
-    mLoginButton = (Button) findViewById(R.id.login_button);
     mLoadingLogin = (ProgressBar) findViewById(R.id.loadingLogin);
     mCheckLogin = (RelativeLayout) findViewById(R.id.checkLogin);
     mLoginText = (TextView) findViewById(R.id.textLogin);
+    // Set a custom color for the indeterminated progressBar
+    mLoadingLogin.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color
+            .yellow),
+        PorterDuff.Mode.SRC_IN);
 
   }
 
   private void login() {
     validate();
-    loading();
   }
 
-  private void setAnimation(final View view, int currentWidth, int newWidth) {
+  @Override
+  public void toggleLoadingButton() {
+    if(mCheckLogin.getWidth() != 180) {
+      setAnimation();
+      mLoginText.setVisibility(View.GONE);
+      mLoadingLogin.setVisibility(View.VISIBLE);
+    } else {
+      mCheckLogin.getLayoutParams().width= ViewGroup.LayoutParams.MATCH_PARENT;
+      mCheckLogin.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+      mLoginText.setVisibility(View.VISIBLE);
+      mLoadingLogin.setVisibility(View.GONE);
+    }
+  }
+
+  /**
+   * Animate the view's width
+   */
+  @Override
+  public void setAnimation() {
+    int currentWidth = mCheckLogin.getWidth();
 
     ValueAnimator widthAnimator = ValueAnimator
-        .ofInt(currentWidth, newWidth)
-        .setDuration(1000);
-
+        .ofInt(currentWidth, 180)
+        .setDuration(600);
     widthAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
 
         // get the value the interpolator is at
-        Integer value = (Integer) animation.getAnimatedValue();
-
-        view.getLayoutParams().width = value;
-        view.requestLayout();
+        mCheckLogin.getLayoutParams().width = (Integer) animation.getAnimatedValue();
+        mCheckLogin.requestLayout();
       }
     });
 
     AnimatorSet set = new AnimatorSet();
     set.play(widthAnimator);
-    // this is how you set the parabola which controls acceleration
+    // set the parabola which controls acceleration
     set.setInterpolator(new AccelerateDecelerateInterpolator());
     // start the animation
     set.start();
-
   }
 
-  private void loading() {
-    setAnimation(mCheckLogin,500, 200);
-    mLoginText.setVisibility(View.GONE);
-    mLoadingLogin.setVisibility(View.VISIBLE);
-
-  }
 
   public void validate() {
+    toggleLoadingButton();
 
-    // Check if fields are empty
-    String userNameError = null;
-    if (TextUtils.isEmpty(mEditTextUserName.getText())) {
-      userNameError = getString(R.string.required_field);
-    }
-    toggleTextInputLayoutError(mTextInputUserName, userNameError);
+    validateEmptyField(mEditTextUserName, mTextInputUserName, getString(R
+        .string.required_field));
+    validateEmptyField(mEditTextPassword, mTextInputPassword, getString(R
+        .string.required_field));
 
-    String passError = null;
-    if (TextUtils.isEmpty(mEditTextPassword.getText())) {
-      passError = getString(R.string.required_field);
-    }
-    toggleTextInputLayoutError(mTextInputPassword, passError);
-
-
-    // hide keyboard
-    clearFocus();
+    mUserActionsListener.clearFocus(this);
   }
 
   /**
@@ -126,8 +129,8 @@ public class LoginActivity extends AppCompatActivity {
    *
    * @param msg the message, or null to hide
    */
-  private static void toggleTextInputLayoutError(@NonNull TextInputLayout textInputLayout,
-                                                 String msg) {
+  @Override
+  public void toggleTextInputLayoutError(@NonNull TextInputLayout textInputLayout, String msg) {
     textInputLayout.setError(msg);
     if (msg == null) {
       textInputLayout.setErrorEnabled(false);
@@ -137,16 +140,20 @@ public class LoginActivity extends AppCompatActivity {
   }
 
   /**
-   * Hides the keyboard when the user validates their credentials
+   * Validate if an editText is filled by the user
+   * @param editText with the text
+   * @param textInputLayout that contains the editText
+   * @param errorText message to guide the user
    */
-  private void clearFocus() {
-    View view = this.getCurrentFocus();
-    if (view != null && view instanceof EditText) {
-      InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context
-          .INPUT_METHOD_SERVICE);
-      inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-      view.clearFocus();
+  @Override
+  public void validateEmptyField(EditText editText, TextInputLayout textInputLayout, String
+      errorText) {
+    String userNameError = null;
+    if (TextUtils.isEmpty(editText.getText())) {
+      userNameError = errorText;
     }
+    toggleTextInputLayoutError(textInputLayout, userNameError);
   }
+
 
 }
