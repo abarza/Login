@@ -5,6 +5,7 @@ import android.animation.ValueAnimator;
 import android.graphics.PorterDuff;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +17,7 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,21 +38,23 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   private ProgressBar mLoadingLogin;
   private RelativeLayout mCheckLogin;
   private TextView mLoginText;
+  private ScrollView mScrollView;
+
+  private static final int SLEEP_TIME = 1000;
 
   // set fields for intDef
   private static final int IDLE = 0;
   private static final int SUCCESS = 1;
   private static final int FAILED = 2;
   private static final int NO_CONNECTION = 3;
-  private static final int MISSING_FIELDS = 4;
-  private static final int WRONG_CREDENTIALS = 5;
+  private static final int WRONG_CREDENTIALS = 4;
 
   private
   @LoginActivity.LoginMode
   int mLoginStatus = 0;
 
   @Retention(RetentionPolicy.SOURCE)
-  @IntDef({IDLE, SUCCESS, FAILED, NO_CONNECTION, MISSING_FIELDS, WRONG_CREDENTIALS})
+  @IntDef({IDLE, SUCCESS, FAILED, NO_CONNECTION, WRONG_CREDENTIALS})
   @interface LoginMode {}
 
   @Override
@@ -59,16 +63,26 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     setContentView(R.layout.activity_login);
     mUserActionsListener = new LoginPresenter(this);
     setupComponents();
+    if(mUserActionsListener.isNetworkAvailable()) {
+      setListeners();
+    } else {
+      setConnectionErrorMode();
+    }
+
+
+  }
+
+  private void setListeners() {
     mCheckLogin.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         login();
       }
     });
-
   }
 
   private void setupComponents() {
+    mScrollView = (ScrollView) findViewById(R.id.loginScreen);
     mEditTextUserName = (EditText) findViewById(R.id.userNameEditText);
     mTextInputUserName = (TextInputLayout) findViewById(R.id.userNameTextInputLayout);
     mTextInputPassword = (TextInputLayout) findViewById(R.id.passwordTextInputLayout);
@@ -83,7 +97,6 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   }
 
   private void login() {
-    toggleLoadingButton();
     mCheckLogin.setEnabled(false);
     validate();
     updateUI();
@@ -131,12 +144,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   }
 
 
-  public int validate() {
-    if (TextUtils.isEmpty(mEditTextUserName.getText()) || TextUtils.isEmpty
-        (mEditTextPassword
-            .getText())) {
-      mLoginStatus = MISSING_FIELDS;
-    } else if (!mUserActionsListener.isNetworkAvailable()) {
+  public void validate() {
+    if (!mUserActionsListener.isNetworkAvailable()) {
       mLoginStatus = NO_CONNECTION;
     } else if (!mUserActionsListener.hasValidCredentials()) {
       mLoginStatus = WRONG_CREDENTIALS;
@@ -145,17 +154,11 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     } else {
       mLoginStatus = SUCCESS;
     }
-    return mLoginStatus;
   }
 
   public void updateUI() {
-    toggleLoadingButton();
     switch (mLoginStatus) {
-      case MISSING_FIELDS:
-        setMissingFieldsMode();
-        break;
       case WRONG_CREDENTIALS:
-        toggleLoadingButton();
         seWrongCredentialsMode();
       case NO_CONNECTION:
         setConnectionErrorMode();
@@ -169,9 +172,6 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
       case IDLE:
         setIdleMode();
     }
-    mUserActionsListener.clearFocus(this);
-    mCheckLogin.setEnabled(true);
-    toggleLoadingButton();
   }
 
   /**
@@ -206,9 +206,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     toggleTextInputLayoutError(textInputLayout, userNameError);
   }
 
-  private void setMissingFieldsMode() {
-    Toast.makeText(this, "Missing credentials", Toast.LENGTH_SHORT).show();
-    mUserActionsListener.clearFocus(this);
+  private void checkMissingFields() {
     validateEmptyField(mEditTextUserName, mTextInputUserName, getString(R
         .string.required_field));
     validateEmptyField(mEditTextPassword, mTextInputPassword, getString(R
@@ -216,25 +214,57 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   }
 
   private void seWrongCredentialsMode() {
-    mUserActionsListener.clearFocus(this);
     Toast.makeText(this, "Wrong credentials", Toast.LENGTH_SHORT).show();
+    setIdleMode();
   }
 
   private void setConnectionErrorMode() {
-    Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+    mEditTextUserName.setFocusable(false);
+    mEditTextPassword.setFocusable(false);
+    mUserActionsListener.clearFocus(this);
+    mEditTextPassword.setEnabled(false);
+    mEditTextUserName.setEnabled(false);
+    mCheckLogin.setEnabled(false);
+    Snackbar snackbar = Snackbar.make(mScrollView, R.string.no_internet,
+        Snackbar
+            .LENGTH_INDEFINITE);
+    snackbar.show();
   }
 
   private void setSuccessMode() {
     Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+    setIdleMode();
   }
 
   private void setFailedMode() {
     Toast.makeText(this, "Fail login", Toast.LENGTH_SHORT).show();
+    setIdleMode();
   }
 
   private void setIdleMode() {
-    mUserActionsListener.clearFocus(this);
+    checkMissingFields();
+    Thread timer = new Thread() {
+      public void run() {
+        try {
+          sleep(SLEEP_TIME);
+        } catch (Exception e) {
+          e.printStackTrace();
+        } finally {
+          runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              mUserActionsListener.clearFocus(LoginActivity.this);
+              mCheckLogin.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+              mCheckLogin.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+              mLoginText.setVisibility(View.VISIBLE);
+              mLoadingLogin.setVisibility(View.GONE);
+            }
+          });
+        }
+      }
+    };
+    timer.start();
+    mCheckLogin.setEnabled(true);
   }
-
 
 }

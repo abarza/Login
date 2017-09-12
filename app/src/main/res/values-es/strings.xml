@@ -7,4 +7,5 @@
   <string name="password">Contraseña</string>
   <string name="next">Sig.</string>
   <string name="required_field">Campo requerido</string>
+  <string name="no_internet">"Por favor "</string>
 </resources>
