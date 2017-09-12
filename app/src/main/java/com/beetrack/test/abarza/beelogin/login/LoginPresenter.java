@@ -1,14 +1,9 @@
 package com.beetrack.test.abarza.beelogin.login;
 
-import android.animation.AnimatorSet;
-import android.animation.ValueAnimator;
+
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
-import android.text.TextUtils;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
@@ -44,6 +39,18 @@ public class LoginPresenter implements LoginContract.UserActionsListener {
     mLoginView.toggleLoadingButton();
   }
 
+  @Override
+  public boolean isNetworkAvailable() {
+    return true;
+  }
 
+  @Override
+  public boolean hasValidCredentials() {
+    return false;
+  }
 
+  @Override
+  public boolean errorAtLogin() {
+    return false;
+  }
 }

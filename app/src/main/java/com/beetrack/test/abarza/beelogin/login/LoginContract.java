@@ -31,6 +31,12 @@ public class LoginContract {
 
     void processLogin();
 
+    boolean isNetworkAvailable();
+
+    boolean hasValidCredentials();
+
+    boolean errorAtLogin();
+
   }
 
 }

@@ -2,8 +2,8 @@ package com.beetrack.test.abarza.beelogin.login;
 
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.graphics.PorterDuff;
+import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.content.ContextCompat;
@@ -12,16 +12,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.beetrack.test.abarza.beelogin.R;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
@@ -35,6 +36,22 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   private ProgressBar mLoadingLogin;
   private RelativeLayout mCheckLogin;
   private TextView mLoginText;
+
+  // set fields for intDef
+  private static final int IDLE = 0;
+  private static final int SUCCESS = 1;
+  private static final int FAILED = 2;
+  private static final int NO_CONNECTION = 3;
+  private static final int MISSING_FIELDS = 4;
+  private static final int WRONG_CREDENTIALS = 5;
+
+  private
+  @LoginActivity.LoginMode
+  int mLoginStatus = 0;
+
+  @Retention(RetentionPolicy.SOURCE)
+  @IntDef({IDLE, SUCCESS, FAILED, NO_CONNECTION, MISSING_FIELDS, WRONG_CREDENTIALS})
+  @interface LoginMode {}
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -63,21 +80,23 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     mLoadingLogin.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color
             .yellow),
         PorterDuff.Mode.SRC_IN);
-
   }
 
   private void login() {
+    toggleLoadingButton();
+    mCheckLogin.setEnabled(false);
     validate();
+    updateUI();
   }
 
   @Override
   public void toggleLoadingButton() {
-    if(mCheckLogin.getWidth() != 180) {
+    if (mCheckLogin.getWidth() != 180) {
       setAnimation();
       mLoginText.setVisibility(View.GONE);
       mLoadingLogin.setVisibility(View.VISIBLE);
     } else {
-      mCheckLogin.getLayoutParams().width= ViewGroup.LayoutParams.MATCH_PARENT;
+      mCheckLogin.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
       mCheckLogin.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
       mLoginText.setVisibility(View.VISIBLE);
       mLoadingLogin.setVisibility(View.GONE);
@@ -103,7 +122,6 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mCheckLogin.requestLayout();
       }
     });
-
     AnimatorSet set = new AnimatorSet();
     set.play(widthAnimator);
     // set the parabola which controls acceleration
@@ -113,15 +131,47 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   }
 
 
-  public void validate() {
+  public int validate() {
+    if (TextUtils.isEmpty(mEditTextUserName.getText()) || TextUtils.isEmpty
+        (mEditTextPassword
+            .getText())) {
+      mLoginStatus = MISSING_FIELDS;
+    } else if (!mUserActionsListener.isNetworkAvailable()) {
+      mLoginStatus = NO_CONNECTION;
+    } else if (!mUserActionsListener.hasValidCredentials()) {
+      mLoginStatus = WRONG_CREDENTIALS;
+    } else if (mUserActionsListener.errorAtLogin()) {
+      mLoginStatus = FAILED;
+    } else {
+      mLoginStatus = SUCCESS;
+    }
+    return mLoginStatus;
+  }
+
+  public void updateUI() {
     toggleLoadingButton();
-
-    validateEmptyField(mEditTextUserName, mTextInputUserName, getString(R
-        .string.required_field));
-    validateEmptyField(mEditTextPassword, mTextInputPassword, getString(R
-        .string.required_field));
-
+    switch (mLoginStatus) {
+      case MISSING_FIELDS:
+        setMissingFieldsMode();
+        break;
+      case WRONG_CREDENTIALS:
+        toggleLoadingButton();
+        seWrongCredentialsMode();
+      case NO_CONNECTION:
+        setConnectionErrorMode();
+        break;
+      case FAILED:
+        setFailedMode();
+        break;
+      case SUCCESS:
+        setSuccessMode();
+        break;
+      case IDLE:
+        setIdleMode();
+    }
     mUserActionsListener.clearFocus(this);
+    mCheckLogin.setEnabled(true);
+    toggleLoadingButton();
   }
 
   /**
@@ -141,9 +191,10 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
   /**
    * Validate if an editText is filled by the user
-   * @param editText with the text
+   *
+   * @param editText        with the text
    * @param textInputLayout that contains the editText
-   * @param errorText message to guide the user
+   * @param errorText       message to guide the user
    */
   @Override
   public void validateEmptyField(EditText editText, TextInputLayout textInputLayout, String
@@ -153,6 +204,36 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
       userNameError = errorText;
     }
     toggleTextInputLayoutError(textInputLayout, userNameError);
+  }
+
+  private void setMissingFieldsMode() {
+    Toast.makeText(this, "Missing credentials", Toast.LENGTH_SHORT).show();
+    mUserActionsListener.clearFocus(this);
+    validateEmptyField(mEditTextUserName, mTextInputUserName, getString(R
+        .string.required_field));
+    validateEmptyField(mEditTextPassword, mTextInputPassword, getString(R
+        .string.required_field));
+  }
+
+  private void seWrongCredentialsMode() {
+    mUserActionsListener.clearFocus(this);
+    Toast.makeText(this, "Wrong credentials", Toast.LENGTH_SHORT).show();
+  }
+
+  private void setConnectionErrorMode() {
+    Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+  }
+
+  private void setSuccessMode() {
+    Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+  }
+
+  private void setFailedMode() {
+    Toast.makeText(this, "Fail login", Toast.LENGTH_SHORT).show();
+  }
+
+  private void setIdleMode() {
+    mUserActionsListener.clearFocus(this);
   }
 
 

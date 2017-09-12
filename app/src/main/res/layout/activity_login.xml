@@ -101,7 +101,10 @@
           android:id="@+id/loadingLogin"
           android:layout_width="50dp"
           android:layout_height="50dp"
+          android:layout_centerHorizontal="true"
           android:layout_centerInParent="true"
+          android:layout_centerVertical="true"
+          android:foregroundGravity="center_vertical|center_horizontal|center"
           android:indeterminate="true"
           android:visibility="gone"/>
 
@@ -109,8 +112,9 @@
           android:id="@+id/textLogin"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_centerHorizontal="true"
-          android:layout_centerVertical="true"
+          android:layout_centerHorizontal="false"
+          android:layout_centerInParent="true"
+          android:layout_centerVertical="false"
           android:paddingBottom="16dp"
           android:paddingTop="15dp"
           android:text="@string/log_in"
