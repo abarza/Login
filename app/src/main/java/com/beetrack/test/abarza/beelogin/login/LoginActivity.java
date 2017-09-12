@@ -23,6 +23,8 @@ import android.widget.Toast;
 
 import com.beetrack.test.abarza.beelogin.R;
 
+import org.w3c.dom.Text;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -30,6 +32,8 @@ import java.lang.annotation.RetentionPolicy;
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
   private static final String TAG = LoginActivity.class.getSimpleName();
+
+  // UI fields
   private LoginContract.UserActionsListener mUserActionsListener;
   private EditText mEditTextUserName;
   private EditText mEditTextPassword;
@@ -40,6 +44,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   private TextView mLoginText;
   private ScrollView mScrollView;
 
+  // sleep time to simulate slow internet connection
   private static final int SLEEP_TIME = 1000;
 
   // set fields for intDef
@@ -48,13 +53,14 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   private static final int FAILED = 2;
   private static final int NO_CONNECTION = 3;
   private static final int WRONG_CREDENTIALS = 4;
+  private static final int MISSING_FIELDS = 5;
 
   private
   @LoginActivity.LoginMode
   int mLoginStatus = 0;
 
   @Retention(RetentionPolicy.SOURCE)
-  @IntDef({IDLE, SUCCESS, FAILED, NO_CONNECTION, WRONG_CREDENTIALS})
+  @IntDef({IDLE, SUCCESS, FAILED, NO_CONNECTION, WRONG_CREDENTIALS, MISSING_FIELDS})
   @interface LoginMode {}
 
   @Override
@@ -63,13 +69,11 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     setContentView(R.layout.activity_login);
     mUserActionsListener = new LoginPresenter(this);
     setupComponents();
-    if(mUserActionsListener.isNetworkAvailable()) {
+    if (mUserActionsListener.isNetworkAvailable()) {
       setListeners();
     } else {
       setConnectionErrorMode();
     }
-
-
   }
 
   private void setListeners() {
@@ -145,9 +149,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
 
   public void validate() {
-    if (!mUserActionsListener.isNetworkAvailable()) {
+    if (TextUtils.isEmpty(mEditTextUserName.getText()) || TextUtils.isEmpty(mEditTextPassword
+        .getText())) {
+      mLoginStatus = MISSING_FIELDS;
+    } else if (mUserActionsListener.isNetworkAvailable()) {
       mLoginStatus = NO_CONNECTION;
-    } else if (!mUserActionsListener.hasValidCredentials()) {
+    } else if (mUserActionsListener.hasValidCredentials()) {
       mLoginStatus = WRONG_CREDENTIALS;
     } else if (mUserActionsListener.errorAtLogin()) {
       mLoginStatus = FAILED;
@@ -158,6 +165,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
   public void updateUI() {
     switch (mLoginStatus) {
+      case MISSING_FIELDS:
+        setMissingFieldsMode();
       case WRONG_CREDENTIALS:
         seWrongCredentialsMode();
       case NO_CONNECTION:
@@ -213,6 +222,11 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         .string.required_field));
   }
 
+  private void setMissingFieldsMode() {
+    checkMissingFields();
+    setIdleMode();
+  }
+
   private void seWrongCredentialsMode() {
     Toast.makeText(this, "Wrong credentials", Toast.LENGTH_SHORT).show();
     setIdleMode();
@@ -243,6 +257,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
   private void setIdleMode() {
     checkMissingFields();
+    // Just for testing purposes, add a delay to simulate internet data validation
     Thread timer = new Thread() {
       public void run() {
         try {

@@ -35,11 +35,6 @@ public class LoginPresenter implements LoginContract.UserActionsListener {
   }
 
   @Override
-  public void processLogin() {
-    mLoginView.toggleLoadingButton();
-  }
-
-  @Override
   public boolean isNetworkAvailable() {
     return true;
   }

@@ -29,8 +29,6 @@ public class LoginContract {
 
     void clearFocus(Activity activity);
 
-    void processLogin();
-
     boolean isNetworkAvailable();
 
     boolean hasValidCredentials();
