@@ -2,6 +2,8 @@ package com.beetrack.test.abarza.beelogin.login;
 
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
@@ -14,6 +16,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -94,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     mLoadingLogin = (ProgressBar) findViewById(R.id.loadingLogin);
     mCheckLogin = (RelativeLayout) findViewById(R.id.checkLogin);
     mLoginText = (TextView) findViewById(R.id.textLogin);
-    // Set a custom color for the indeterminated progressBar
+    // Set a custom color for the indeterminate progressBar
     mLoadingLogin.getIndeterminateDrawable().setColorFilter(ContextCompat.getColor(this, R.color
             .yellow),
         PorterDuff.Mode.SRC_IN);
@@ -152,9 +155,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     if (TextUtils.isEmpty(mEditTextUserName.getText()) || TextUtils.isEmpty(mEditTextPassword
         .getText())) {
       mLoginStatus = MISSING_FIELDS;
-    } else if (mUserActionsListener.isNetworkAvailable()) {
+    } else if (!mUserActionsListener.isNetworkAvailable()) {
       mLoginStatus = NO_CONNECTION;
-    } else if (mUserActionsListener.hasValidCredentials()) {
+    } else if (!mUserActionsListener.hasValidCredentials()) {
       mLoginStatus = WRONG_CREDENTIALS;
     } else if (mUserActionsListener.errorAtLogin()) {
       mLoginStatus = FAILED;
@@ -167,8 +170,10 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     switch (mLoginStatus) {
       case MISSING_FIELDS:
         setMissingFieldsMode();
+        break;
       case WRONG_CREDENTIALS:
         seWrongCredentialsMode();
+        break;
       case NO_CONNECTION:
         setConnectionErrorMode();
         break;
@@ -180,6 +185,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         break;
       case IDLE:
         setIdleMode();
+        break;
     }
   }
 
@@ -235,7 +241,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   private void setConnectionErrorMode() {
     mEditTextUserName.setFocusable(false);
     mEditTextPassword.setFocusable(false);
-    mUserActionsListener.clearFocus(this);
+    clearFocus();
     mEditTextPassword.setEnabled(false);
     mEditTextUserName.setEnabled(false);
     mCheckLogin.setEnabled(false);
@@ -265,14 +271,16 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         } catch (Exception e) {
           e.printStackTrace();
         } finally {
+          // bring back view changes to the UI thread
           runOnUiThread(new Runnable() {
             @Override
             public void run() {
-              mUserActionsListener.clearFocus(LoginActivity.this);
+              clearFocus();
               mCheckLogin.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
               mCheckLogin.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
               mLoginText.setVisibility(View.VISIBLE);
               mLoadingLogin.setVisibility(View.GONE);
+              //toggleLoadingButton();
             }
           });
         }
@@ -280,6 +288,20 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     };
     timer.start();
     mCheckLogin.setEnabled(true);
+  }
+
+  /**
+   * Hides the keyboard when the user validates their credentials
+   */
+  @Override
+  public void clearFocus() {
+    View view = getCurrentFocus();
+    if (view != null && view instanceof EditText) {
+      InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context
+          .INPUT_METHOD_SERVICE);
+      inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+      view.clearFocus();
+    }
   }
 
 }

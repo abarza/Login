@@ -1,6 +1,5 @@
 package com.beetrack.test.abarza.beelogin.login;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.widget.EditText;
@@ -16,6 +15,8 @@ public class LoginContract {
 
     void toggleLoadingButton();
 
+    void clearFocus();
+
     void setAnimation();
 
     void toggleTextInputLayoutError(@NonNull TextInputLayout textInputLayout,
@@ -26,8 +27,6 @@ public class LoginContract {
   }
 
   interface UserActionsListener {
-
-    void clearFocus(Activity activity);
 
     boolean isNetworkAvailable();
 

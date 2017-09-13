@@ -7,5 +7,6 @@
   <string name="password">Contraseña</string>
   <string name="next">Sig.</string>
   <string name="required_field">Campo requerido</string>
-  <string name="no_internet">"Por favor "</string>
+  <string name="no_internet">Por favor revisa tu conexión a internet</string>
+  <string name="app_name" translatable="false"></string>
 </resources>
