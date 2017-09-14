@@ -13,8 +13,6 @@ public class LoginContract {
 
   interface View {
 
-    void toggleLoadingButton();
-
     void clearFocus();
 
     void setAnimation();
@@ -23,6 +21,8 @@ public class LoginContract {
                                     String msg);
 
     void validateEmptyField(EditText editText, TextInputLayout textInputLayout, String errorText);
+
+    void setIdleMode();
 
   }
 

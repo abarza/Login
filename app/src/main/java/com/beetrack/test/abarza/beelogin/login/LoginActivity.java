@@ -109,18 +109,10 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     updateUI();
   }
 
-  @Override
-  public void toggleLoadingButton() {
-    if (mCheckLogin.getWidth() != 180) {
-      setAnimation();
-      mLoginText.setVisibility(View.GONE);
-      mLoadingLogin.setVisibility(View.VISIBLE);
-    } else {
-      mCheckLogin.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-      mCheckLogin.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-      mLoginText.setVisibility(View.VISIBLE);
-      mLoadingLogin.setVisibility(View.GONE);
-    }
+  public void loadingButton() {
+    setAnimation();
+    mLoginText.setVisibility(View.GONE);
+    mLoadingLogin.setVisibility(View.VISIBLE);
   }
 
   /**
@@ -234,6 +226,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   }
 
   private void seWrongCredentialsMode() {
+    loadingButton();
     Toast.makeText(this, "Wrong credentials", Toast.LENGTH_SHORT).show();
     setIdleMode();
   }
@@ -252,6 +245,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
   }
 
   private void setSuccessMode() {
+    loadingButton();
     Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
     setIdleMode();
   }
@@ -261,8 +255,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     setIdleMode();
   }
 
-  private void setIdleMode() {
-    checkMissingFields();
+  @Override
+  public void setIdleMode() {
     // Just for testing purposes, add a delay to simulate internet data validation
     Thread timer = new Thread() {
       public void run() {
@@ -280,7 +274,6 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
               mCheckLogin.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
               mLoginText.setVisibility(View.VISIBLE);
               mLoadingLogin.setVisibility(View.GONE);
-              //toggleLoadingButton();
             }
           });
         }
@@ -289,6 +282,10 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     timer.start();
     mCheckLogin.setEnabled(true);
   }
+
+
+
+
 
   /**
    * Hides the keyboard when the user validates their credentials

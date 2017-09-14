@@ -21,11 +21,11 @@ public class LoginPresenter implements LoginContract.UserActionsListener {
 
   @Override
   public boolean hasValidCredentials() {
-    return true;
+    return false;
   }
 
   @Override
   public boolean errorAtLogin() {
-    return true;
+    return false;
   }
 }
