@@ -86,7 +86,7 @@
 
     <Button
         android:id="@+id/login_button"
-        style="@style/BeetrackButtonSquare"
+        style="@style/ButtonSquare"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
