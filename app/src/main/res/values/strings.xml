@@ -1,6 +1,5 @@
 <resources>
-  <string name="app_name" translatable="false">BeeLogin</string>
-  <string name="beetrack">Beetrack</string>
+  <string name="app_name" translatable="false">Login</string>
   <string name="action_login_short">Log In</string>
   <string name="log_in">Log in</string>
   <string name="user">Username</string>

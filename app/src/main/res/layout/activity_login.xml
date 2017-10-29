@@ -25,7 +25,7 @@
         android:adjustViewBounds="true"
         android:contentDescription="@string/app_name"
         android:scaleType="fitXY"
-        app:srcCompat="@drawable/ic_logobeetrack"/>
+        app:srcCompat="@drawable/ic_logo"/>
 
 
     <android.support.design.widget.TextInputLayout
