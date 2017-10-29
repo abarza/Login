@@ -1,4 +1,4 @@
-package com.beetrack.test.abarza.beelogin;
+package com.frontend.test.abarza.beelogin;
 
 import org.junit.Test;
 

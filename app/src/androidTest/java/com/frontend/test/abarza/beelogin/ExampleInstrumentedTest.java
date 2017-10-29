@@ -1,4 +1,4 @@
-package com.beetrack.test.abarza.beelogin;
+package com.frontend.test.abarza.beelogin;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

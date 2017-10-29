@@ -1,4 +1,4 @@
-package com.beetrack.test.abarza.beelogin;
+package com.frontend.test.abarza.beelogin;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -7,8 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ProgressBar;
 
-import com.beetrack.test.abarza.beelogin.home.HomeActivity;
-import com.beetrack.test.abarza.beelogin.login.LoginActivity;
+import com.frontend.test.abarza.beelogin.home.HomeActivity;
+import com.frontend.test.abarza.beelogin.login.LoginActivity;
 
 import timber.log.Timber;
 

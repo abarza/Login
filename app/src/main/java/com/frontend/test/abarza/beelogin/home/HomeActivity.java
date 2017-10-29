@@ -1,9 +1,9 @@
-package com.beetrack.test.abarza.beelogin.home;
+package com.frontend.test.abarza.beelogin.home;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.beetrack.test.abarza.beelogin.R;
+import com.frontend.test.abarza.beelogin.R;
 
 public class HomeActivity extends AppCompatActivity {
 

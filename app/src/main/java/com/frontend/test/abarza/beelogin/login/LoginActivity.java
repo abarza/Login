@@ -1,4 +1,4 @@
-package com.beetrack.test.abarza.beelogin.login;
+package com.frontend.test.abarza.beelogin.login;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -11,7 +11,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.beetrack.test.abarza.beelogin.R;
+import com.frontend.test.abarza.beelogin.R;
 
 public class LoginActivity extends AppCompatActivity {
 
